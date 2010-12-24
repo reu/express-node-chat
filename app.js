@@ -10,10 +10,10 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
 Room = function(){
-  id       = null,
-  name     = "",
-  messages = [],
-  users    = [],
+  this.id       = new Date().getTime(),
+  this.name     = "",
+  this.messages = [],
+  this.users    = [],
 
   appendMessage = function(message) {
     messages.push(message);
@@ -33,6 +33,12 @@ Room = function(){
       callback(pendingMessages);
     }
   }
+}
+
+Room.createByName = function(name) {
+  var room = new Room();
+  room.name = name;
+  return room;
 }
 
 Message = function(from, text){
@@ -60,10 +66,7 @@ app.get('/rooms/new', function(req, res){
 
 // Create
 app.post('/rooms', function(req, res){
-  var room  = new Room();
-  room.id   = new Date().getTime();
-  room.name = req.body.room.name;
-
+  room = Room.createByName(req.body.room.name);
   rooms[room.id] = room;
 
   res.redirect('/rooms/' + room.id);
