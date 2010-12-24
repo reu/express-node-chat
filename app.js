@@ -54,7 +54,20 @@ var rooms = [];
 var indexHandler = function(req, res){
  res.render('rooms/index', { locals: { rooms: rooms } });
 };
- 
+
+var filters = {
+  getRoom: function(req, res, next){
+    var room = rooms[req.params.room_id];
+
+    if (room) {
+      req.room = room;
+      next();
+    } else {
+      res.send('Oops... room not found =/', 404);
+    }
+  }
+}
+
 // Index
 app.get('/',      indexHandler);
 app.get('/rooms', indexHandler);
@@ -73,14 +86,8 @@ app.post('/rooms', function(req, res){
 });
 
 // Show
-app.get('/rooms/:id', function(req, res){
-  var room = rooms[req.params.id];
-
-  if (room) {
-    res.render('rooms/room', { locals: { room: room } });
-  } else {
-    res.send('Oops... room not found =/', 404);
-  } 
+app.get('/rooms/:room_id', filters.getRoom, function(req, res){
+  res.render('rooms/room', { locals: { room: req.room } });
 });
 
 app.listen(3000);
