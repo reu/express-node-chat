@@ -1,0 +1,8 @@
+h2 Available rooms
+
+ul
+  - for (var key in rooms)
+    li
+      a(href: '/rooms/' + rooms[key].id)!= rooms[key].name
+
+a(href: '/rooms/new') Create a new chat room

@@ -1,0 +1,6 @@
+h2 Create a new chat room
+
+form(method: 'POST', action: '/rooms')
+  label(for: 'room_name') Name
+  input(type: 'text', name: 'room[name]', id: 'room_name')
+  input(type: 'submit', value: 'Create a new room')
