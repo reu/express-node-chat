@@ -13,7 +13,34 @@ Room = function(){
   id       = null,
   name     = "",
   messages = [],
-  users    = []
+  users    = [],
+
+  appendMessage = function(message) {
+    messages.push(message);
+  }
+
+  query = function(since, callback) {
+    var pendingMessages = [];
+    for(var key in messages) {
+      var message = messages[key];
+
+      if (message.sent_at > since) {
+        pendingMessages.push(message)
+      }
+    }
+
+    if (pendingMessages > 0) {
+      callback(pendingMessages);
+    }
+  }
+}
+
+Message = function(from, text){
+  this.from = from,
+  this.text = text,
+  this.to   = null,
+  this.type = 'message',
+  this.sent_at = new Date().getTime()
 }
 
 var rooms = [];
