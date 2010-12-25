@@ -23,7 +23,7 @@ jQuery(function($){
 
   $('form').submit(function(e){
     e.preventDefault();
-    $.post(this.action, $(this).serialize(), appendMessage, 'html');
+    $.post(this.action, $(this).serialize(), null, 'html');
     $('#message_text').val('');
   });
 
