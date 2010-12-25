@@ -4,8 +4,8 @@ var express = require('express'),
       express.cookieDecoder(),
       express.session(),
       express.bodyDecoder(),
-      express.methodOverride(),
-      express.logger({ format: ':method :url :status in :response-timems' })
+      express.logger({ format: ':method :url :status in :response-timems' }),
+      express.methodOverride()
     );
 
 app.set('view engine', 'jade');
@@ -119,7 +119,7 @@ app.get('/rooms/:room_id', filters.getRoom, function(req, res){
 // Messages
 // List
 app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
-  req.room.query(req.param['since'], function(messages){
+  req.room.query(parseInt(req.query.since), function(messages){
     res.send(res.partial('message', messages));
     res.end();
   });
