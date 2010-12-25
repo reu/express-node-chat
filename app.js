@@ -3,7 +3,8 @@ var express = require('express'),
       express.cookieDecoder(),
       express.session(),
       express.bodyDecoder(),
-      express.methodOverride()
+      express.methodOverride(),
+      express.logger({ format: ':method :url :status in :response-timems' })
     );
 
 app.set('views', __dirname + '/views');
