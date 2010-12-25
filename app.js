@@ -21,6 +21,8 @@ Room = function(){
   this.callbacks = [],
   this.users     = [],
 
+  this.maximum_messages = 200,
+
   this.appendMessage = function(message) {
     console.log('Appending message ' + message.toString());
     this.messages.push(message);
@@ -30,9 +32,7 @@ Room = function(){
       this.callbacks.shift()([message]);
     }
 
-    while (this.messages.length > 200) {
-      this.messages.shift();
-    }
+    this.flushMessages();
   },
 
   this.query = function(since, callback) {
@@ -50,9 +50,14 @@ Room = function(){
 
     if (pendingMessages > 0) {
       callback(pendingMessages);
-    } else { 
+    } else {
       this.callbacks.push(callback);
     }
+  },
+
+  this.flushMessages = function() {
+    while (this.messages.length > this.maximum_messages)
+      this.messages.shift();
   }
 }
 
@@ -118,7 +123,7 @@ app.get('/rooms/:room_id', filters.getRoom, function(req, res){
 // Messages
 // List
 app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
-  req.room.query(new Date().getTime(), function(messages){
+  req.room.query(req.param['since'], function(messages){
     res.send(res.partial('message', messages));
     res.end();
   });
