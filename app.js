@@ -20,11 +20,9 @@ Room = function(){
   this.maximum_messages = 200,
 
   this.appendMessage = function(message) {
-    console.log('Appending message ' + message.toString());
     this.messages.push(message);
 
     while (this.callbacks.length > 0) {
-      console.log('Calling callback for ' + message.toString());
       this.callbacks.shift()([message]);
     }
 
@@ -32,23 +30,7 @@ Room = function(){
   },
 
   this.query = function(since, callback) {
-    var pendingMessages = [];
-    for(var key in this.messages) {
-      var message = this.messages[key];
-
-      console.log('Checking ' + message.toString() + ' to ' + new Date(since));
-
-      if (message.sent_at > since) {
-        console.log('Adding ' + message.toString() + ' to pending message list')
-        pendingMessages.push(message)
-      }
-    }
-
-    if (pendingMessages > 0) {
-      callback(pendingMessages);
-    } else {
-      this.callbacks.push(callback);
-    }
+    this.callbacks.push(callback);
   },
 
   this.flushMessages = function() {
@@ -132,6 +114,7 @@ app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
 app.post('/rooms/:room_id/messages', filters.getRoom, function(req, res){
   var message = new Message('teste', req.body.message.text);
   req.room.appendMessage(message);
+  res.writeHead(200);
   res.end();
 });
 
