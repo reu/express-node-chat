@@ -2,9 +2,7 @@ jQuery(function($){
   function longPool(response) {
     var room = $('#room');
 
-    if (response) {
-      room.append(response);
-    }
+    appendMessage(response);
 
     $.ajax({ 
       cache: false,
@@ -22,4 +20,14 @@ jQuery(function($){
   }
 
   longPool();
+
+  $('form').submit(function(e){
+    e.preventDefault();
+    $.post(this.action, $(this).serialize(), appendMessage, 'html');
+    $('#message_text').val('');
+  });
+
+  function appendMessage(message) {
+    $('#room').append(message);
+  }
 });

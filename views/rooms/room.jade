@@ -6,3 +6,5 @@ table#room(data-room-id: room.id)
 form(method: 'POST', action: '/rooms/' + room.id + '/messages')
   input(type: 'text', name: 'message[text]', id: 'message_text')
   input(type: 'submit', value: 'Send message')
+
+script(src: '/javascripts/pool.js')

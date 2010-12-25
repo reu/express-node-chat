@@ -41,7 +41,7 @@ Room = function(){
 
       console.log('Checking ' + message.toString() + ' to ' + new Date(since));
 
-      if (message.sent_at < since) {
+      if (message.sent_at > since) {
         console.log('Adding ' + message.toString() + ' to pending message list')
         pendingMessages.push(message)
       }
@@ -126,7 +126,7 @@ app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
 app.post('/rooms/:room_id/messages', filters.getRoom, function(req, res){
   var message = new Message('teste', req.body.message.text);
   req.room.appendMessage(message);
-  res.render('partials/message', { locals: { message: message } });
+  res.end();
 });
 
 app.listen(3000);
