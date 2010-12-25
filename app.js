@@ -1,5 +1,6 @@
 var express = require('express'),
     app     = express.createServer(
+      express.staticProvider(__dirname + '/public'),
       express.cookieDecoder(),
       express.session(),
       express.bodyDecoder(),
@@ -7,12 +8,7 @@ var express = require('express'),
       express.logger({ format: ':method :url :status in :response-timems' })
     );
 
-app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
-
-app.configure(function(){
-  app.use(express.staticProvider(__dirname + '/public'));
-});
 
 Room = function(){
   this.id        = new Date().getTime(),
