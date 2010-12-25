@@ -77,6 +77,10 @@ Message = function(from, text){
 
 var rooms = [];
 
+var room = Room.createByName('General room');
+room.id = 1;
+rooms[1] = room;
+
 var indexHandler = function(req, res){
   res.render('rooms/index', { locals: { rooms: rooms } });
 };
