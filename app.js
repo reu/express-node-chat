@@ -30,7 +30,19 @@ Room = function(){
   },
 
   this.query = function(since, callback) {
-    this.callbacks.push(callback);
+    var pendingMessages = [];
+    for(var key in this.messages) {
+      var message = this.messages[key];
+
+      if (message.sent_at > since)
+        pendingMessages.push(message);
+    }
+
+    if (pendingMessages.length > 0) {
+      callback(pendingMessages);
+    } else {
+      this.callbacks.push(callback);
+    }
   },
 
   this.flushMessages = function() {
