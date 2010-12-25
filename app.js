@@ -82,21 +82,25 @@ Message = function(from, text){
   }
 }
 
+User = function(nick){
+  this.nick = nick
+}
+
 // Here we will store all our rooms
 var rooms = [];
 
-// Creating the default room
+// Default room
 var room = Room.createByName('General room');
 room.id = 1;
 rooms[1] = room;
 
-// As both / and /rooms url shares the same behaviour, we needed
-// to stract the function for then
+// As both "/" and "/rooms" url shares the same behaviour, we needed
+// to extract the function for then
 var indexHandler = function(req, res){
   res.render('rooms/index', { locals: { rooms: rooms } });
 };
 
-// Here are helper filters, used to avoid duplication
+// Helper filters to avoid duplication
 var filters = {
   getRoom: function(req, res, next){
     var room = rooms[req.params.room_id];
@@ -107,6 +111,17 @@ var filters = {
     } else {
       res.send('Oops... room not found =/', 404);
     }
+  },
+
+  getUser: function(req, res, next) {
+    var user = req.room.users[req.sessionID];
+
+    if (user)
+      req.user = user
+    else
+      req.room.users[req.sessionID] = req.user = new User('User #' + req.sessionID);
+
+    next();
   }
 }
 
@@ -141,8 +156,8 @@ app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
   });
 });
 
-app.post('/rooms/:room_id/messages', filters.getRoom, function(req, res){
-  var message = new Message('teste', req.body.message.text);
+app.post('/rooms/:room_id/messages', filters.getRoom, filters.getUser, function(req, res){
+  var message = new Message(req.user.nick, req.body.message.text);
   req.room.appendMessage(message);
   res.writeHead(200);
   res.end();
