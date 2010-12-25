@@ -20,16 +20,23 @@ Room = function(){
   this.maximum_messages = 200,
 
   this.appendMessage = function(message) {
+    // Adds the message to the rooms messages collection
     this.messages.push(message);
 
-    while (this.callbacks.length > 0) {
+    // Now we execute all the remaining callbacks. So, all the
+    // users connected to the room will receive the update.
+    while (this.callbacks.length > 0) 
       this.callbacks.shift()([message]);
-    }
 
+    // Here we clean up old messages
     this.flushMessages();
   },
 
   this.query = function(since, callback) {
+    // The users will constantly query the room for new messages.
+    // The main point here is that different from the usual implementations, 
+    // node doesn't "block" the process, so the users can remain
+    // "connected" until the server respond to then.
     var pendingMessages = [];
     for(var key in this.messages) {
       var message = this.messages[key];
@@ -39,8 +46,12 @@ Room = function(){
     }
 
     if (pendingMessages.length > 0) {
+      // If the user didn`t receive some of the message, then we will
+      // use the callback to render then
       callback(pendingMessages);
     } else {
+      // Otherwise, we will add this to the room's callback collection,
+      // and we are gonna call it when someone send a new message.
       this.callbacks.push(callback);
     }
   },
@@ -51,12 +62,14 @@ Room = function(){
   }
 }
 
+// Convinience stactic method, used as a room factory
 Room.createByName = function(name) {
   var room = new Room();
   room.name = name;
   return room;
 }
 
+// The message class. Currently stored in memory.
 Message = function(from, text){
   this.from = from,
   this.text = text,
@@ -69,16 +82,21 @@ Message = function(from, text){
   }
 }
 
+// Here we will store all our rooms
 var rooms = [];
 
+// Creating the default room
 var room = Room.createByName('General room');
 room.id = 1;
 rooms[1] = room;
 
+// As both / and /rooms url shares the same behaviour, we needed
+// to stract the function for then
 var indexHandler = function(req, res){
   res.render('rooms/index', { locals: { rooms: rooms } });
 };
 
+// Here are helper filters, used to avoid duplication
 var filters = {
   getRoom: function(req, res, next){
     var room = rooms[req.params.room_id];
