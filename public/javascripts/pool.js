@@ -1,6 +1,9 @@
 jQuery(function($){
   var maximumRetries = 3,
-      retries = 0;
+      retries = 0,
+
+      hasFocus = true,
+      unreadMessagesQuantity = 0;
 
   function longPool() {
     var room = $('#room');
@@ -23,6 +26,11 @@ jQuery(function($){
       success: function(data) {
         appendMessage(data);
 
+        if (!hasFocus) {
+          unreadMessagesQuantity += $('.message', $('<table/>').append(data)).length;
+          updateTitle();
+        }
+
         // Start pooling again
         longPool(data);
       }
@@ -40,5 +48,23 @@ jQuery(function($){
 
   function appendMessage(message) {
     $('#room').append(message);
+  }
+
+  $(window).bind('blur', function() {
+    hasFocus = false;
+    updateTitle();
+  });
+
+  $(window).bind('focus', function() {
+    hasFocus = true;
+    unreadMessagesQuantity = 0;
+    updateTitle();
+  });
+
+  function updateTitle() {
+    if(unreadMessagesQuantity > 0)
+      $('title').html('(' + unreadMessagesQuantity + ') xpress chat')
+    else
+      $('title').html('xpress chat');
   }
 });
