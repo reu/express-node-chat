@@ -1,1 +1,8 @@
 h2!= room.name
+
+table#room(data-room-id: room.id)
+  != partial('message', room.messages)
+
+form(method: 'POST', action: '/rooms/' + room.id + '/messages')
+  input(type: 'text', name: 'message[text]', id: 'message_text')
+  input(type: 'submit', value: 'Send message')

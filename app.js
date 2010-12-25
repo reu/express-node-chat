@@ -9,28 +9,48 @@ var express = require('express'),
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
+app.configure(function(){
+  app.use(express.staticProvider(__dirname + '/public'));
+});
+
 Room = function(){
-  this.id       = new Date().getTime(),
-  this.name     = "",
-  this.messages = [],
-  this.users    = [],
+  this.id        = new Date().getTime(),
+  this.name      = null,
+  this.messages  = [],
+  this.callbacks = [],
+  this.users     = [],
 
-  appendMessage = function(message) {
-    messages.push(message);
-  }
+  this.appendMessage = function(message) {
+    console.log('Appending message ' + message.toString());
+    this.messages.push(message);
 
-  query = function(since, callback) {
+    while (this.callbacks.length > 0) {
+      console.log('Calling callback for ' + message.toString());
+      this.callbacks.shift()([message]);
+    }
+
+    while (this.messages.length > 200) {
+      this.messages.shift();
+    }
+  },
+
+  this.query = function(since, callback) {
     var pendingMessages = [];
-    for(var key in messages) {
-      var message = messages[key];
+    for(var key in this.messages) {
+      var message = this.messages[key];
 
-      if (message.sent_at > since) {
+      console.log('Checking ' + message.toString() + ' to ' + new Date(since));
+
+      if (message.sent_at < since) {
+        console.log('Adding ' + message.toString() + ' to pending message list')
         pendingMessages.push(message)
       }
     }
 
     if (pendingMessages > 0) {
       callback(pendingMessages);
+    } else { 
+      this.callbacks.push(callback);
     }
   }
 }
@@ -46,13 +66,17 @@ Message = function(from, text){
   this.text = text,
   this.to   = null,
   this.type = 'message',
-  this.sent_at = new Date().getTime()
+  this.sent_at = new Date().getTime(),
+
+  this.toString = function() {
+    return this.nick + ' ' + new Date(this.sent_at) + ': ' + this.text;
+  }
 }
 
 var rooms = [];
 
 var indexHandler = function(req, res){
- res.render('rooms/index', { locals: { rooms: rooms } });
+  res.render('rooms/index', { locals: { rooms: rooms } });
 };
 
 var filters = {
@@ -88,6 +112,21 @@ app.post('/rooms', function(req, res){
 // Show
 app.get('/rooms/:room_id', filters.getRoom, function(req, res){
   res.render('rooms/room', { locals: { room: req.room } });
+});
+
+// Messages
+// List
+app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
+  req.room.query(new Date().getTime(), function(messages){
+    res.send(res.partial('message', messages));
+    res.end();
+  });
+});
+
+app.post('/rooms/:room_id/messages', filters.getRoom, function(req, res){
+  var message = new Message('teste', req.body.message.text);
+  req.room.appendMessage(message);
+  res.render('partials/message', { locals: { message: message } });
 });
 
 app.listen(3000);
