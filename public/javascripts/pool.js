@@ -32,7 +32,7 @@ jQuery(function($){
         }
 
         // Start pooling again
-        longPool(data);
+        longPool();
       }
     });
   }
