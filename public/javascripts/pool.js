@@ -48,6 +48,9 @@ jQuery(function($){
 
   function appendMessage(message) {
     $('#room').append(message);
+
+    window.scrollBy(0, 100000000000000000);
+    $('#message_text').focus();
   }
 
   $(window).bind('blur', function() {
