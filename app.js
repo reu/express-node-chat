@@ -149,8 +149,15 @@ app.get('/rooms/:room_id', filters.getRoom, filters.getUser, function(req, res){
 });
 
 app.get('/rooms/:room_id/join', filters.getRoom, function(req, res){
-  if (!req.room.users[req.sessionID])
-    req.room.users[req.sessionID] = new User(req.query.user.nick);
+  if (!req.room.users[req.sessionID]) {
+    var user = new User(req.query.user.nick);
+    req.room.users[req.sessionID] = user;
+
+    // Alert people that a new user joined the room
+    var message = new Message(req.room.name, user.nick + ' joined!');
+    message.type = 'notice';
+    req.room.appendMessage(message);
+  }
 
   res.redirect('/rooms/' + req.room.id);
 });

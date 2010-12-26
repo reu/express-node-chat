@@ -1,4 +1,4 @@
-tr.message(data-time: message.sent_at)
+tr.message(data-time: message.sent_at, class: message.type)
   td!= message.from
   td!= new Date(message.sent_at)
   td!= message.text
