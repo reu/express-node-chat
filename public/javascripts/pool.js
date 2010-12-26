@@ -70,4 +70,8 @@ jQuery(function($){
     else
       $('title').html('xpress chat');
   }
+
+  $(window).unload(function() {
+    $.get('/rooms/' + $('#room').data('room-id') + '/leave', null, null, 'json');
+  });
 });

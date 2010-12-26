@@ -162,6 +162,19 @@ app.get('/rooms/:room_id/join', filters.getRoom, function(req, res){
   res.redirect('/rooms/' + req.room.id);
 });
 
+app.get('/rooms/:room_id/leave', filters.getRoom, filters.getUser, function(req, res){
+  if (delete req.room.users[req.sessionID]) {
+    req.session.destroy();
+
+    var message = new Message(req.room.name, req.user.nick + ' left the room.');
+    message.type = 'notice';
+    req.room.appendMessage(message);
+  }
+
+  res.writeHead(200);
+  res.end();
+});
+
 // Messages
 // List
 app.get('/rooms/:room_id/messages', filters.getRoom, function(req, res){
