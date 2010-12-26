@@ -1,8 +1,13 @@
-h2 Available rooms
+h2 Join a room
 
-ul
-  - for (var key in rooms)
-    li
-      a(href: '/rooms/' + rooms[key].id)!= rooms[key].name
+form(method: 'GET')
+  select(name: 'room[id]', id: 'room_id')
+    - for (var key in rooms)
+      option(value: rooms[key].id)!= rooms[key].name
+
+  input(type: 'text', name: 'user[nick]')
+  input(type: 'submit', value: 'Join')
 
 a(href: '/rooms/new') Create a new chat room
+
+script(src: '/javascripts/join.js')

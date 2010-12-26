@@ -116,12 +116,13 @@ var filters = {
   getUser: function(req, res, next) {
     var user = req.room.users[req.sessionID];
 
-    if (user)
-      req.user = user
-    else
-      req.room.users[req.sessionID] = req.user = new User('User #' + req.sessionID);
-
-    next();
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      req.flash('error', 'You are not on this room.');
+      res.redirect('home');
+    }
   }
 }
 
@@ -139,12 +140,19 @@ app.post('/rooms', function(req, res){
   room = Room.createByName(req.body.room.name);
   rooms[room.id] = room;
 
-  res.redirect('/rooms/' + room.id);
+  res.redirect('home');
 });
 
 // Show
-app.get('/rooms/:room_id', filters.getRoom, function(req, res){
+app.get('/rooms/:room_id', filters.getRoom, filters.getUser, function(req, res){
   res.render('rooms/room', { locals: { room: req.room } });
+});
+
+app.get('/rooms/:room_id/join', filters.getRoom, function(req, res){
+  if (!req.room.users[req.sessionID])
+    req.room.users[req.sessionID] = new User(req.query.user.nick);
+
+  res.redirect('/rooms/' + req.room.id);
 });
 
 // Messages
