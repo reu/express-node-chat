@@ -2,7 +2,7 @@ var express = require('express'),
     app     = express.createServer(
       express.staticProvider(__dirname + '/public'),
       express.cookieDecoder(),
-      express.session(),
+      express.session({ secret: 'sb5vlapgl3cc49sh2ohl6vk40jhjnron2c7ru5kkht1e0qm96d' }),
       express.bodyDecoder(),
       express.logger({ format: ':method :url :status in :response-timems' }),
       express.methodOverride()
