@@ -1,0 +1,17 @@
+{
+  "name": "express-chat",
+  "version": "0.0.1",
+  "homepage": "https://github.com/reu/express-node-chat",
+  "repository": "git://github.com/reu/express-node-chat.git",
+  "author": "Rodrigo Navarro <reu@rnavarro.com.br>",
+  "directories": {
+    "lib": ""
+  },
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "express": "*",
+    "jade": "*"
+  }
+}
