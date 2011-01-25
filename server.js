@@ -6,7 +6,8 @@ var express = require('express'),
       express.bodyDecoder(),
       express.logger({ format: ':method :url :status in :response-timems' }),
       express.methodOverride()
-    );
+    ),
+    sanitizer = require('sanitizer');
 
 app.set('view engine', 'jade');
 
@@ -20,6 +21,7 @@ Room = function(){
   this.maximum_messages = 200,
 
   this.appendMessage = function(message) {
+    var message = sanitizer.escape(message);
     // Adds the message to the rooms messages collection
     this.messages.push(message);
 
