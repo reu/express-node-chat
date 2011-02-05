@@ -5,6 +5,6 @@ h1. Instalation
 3 - Install the jade templating system: <code>npm install jade</code>
 4 - Clone the repo: <code>git clone git://github.com/reu/express-node-chat.git</code>
 5 - <code>cd express-node-chat</code>
-6 - <code>node app.js</code>
+6 - <code>node server.js</code>
 
 Now the a server started in localhost port 3000. Type in your browser http://localhost:3000, and voila!
